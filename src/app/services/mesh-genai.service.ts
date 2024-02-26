@@ -1,14 +1,21 @@
-import { Injectable } from '@angular/core';
+import { Injectable, EventEmitter, Output } from '@angular/core';
 import { Observable, catchError, of, tap } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { DomSanitizer } from '@angular/platform-browser';
+
+export interface Announcing {
+  type: string;
+  payload?: any;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class MeshGenaiService {
-
+  @Output() announcingAgent = new EventEmitter<Announcing>();
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private sanitizer: DomSanitizer
   ) { }
 
   post2(url: string, body: any) {
@@ -50,5 +57,11 @@ export class MeshGenaiService {
         observer.error(e);
       })
     })
+  }
+  sanitizeHTML(html: string) {
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
+  announcing(data: any) {
+    this.announcingAgent.emit(data);
   }
 }

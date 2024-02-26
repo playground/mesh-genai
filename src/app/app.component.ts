@@ -1,14 +1,15 @@
-import { Component, ChangeDetectorRef } from '@angular/core';
-import { OnInit } from '@angular/core';
+import { Component, ChangeDetectorRef, OnDestroy, OnInit } from '@angular/core';
 import { initFlowbite } from 'flowbite';
 import { ActivatedRoute, NavigationEnd, Router} from '@angular/router';
+import { MeshGenaiService } from './services/mesh-genai.service';
+import { Enum } from './models/mesh-model';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit {
+export class AppComponent implements OnInit, OnDestroy {
   title = 'mesh-genai';
   hilite = 'text-blue-700';
   normal = 'text-gray-900';
@@ -18,10 +19,13 @@ export class AppComponent implements OnInit {
     services: this.normal, 
     contact: this.normal
   };
+  agentListener!: { unsubscribe: () => void };
+  queryInProgress = false; 
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
+    private meshService: MeshGenaiService,
     private cd: ChangeDetectorRef
   ) {
   }
@@ -39,6 +43,19 @@ export class AppComponent implements OnInit {
         }
       }
     })
+
+    this.agentListener = this.meshService.announcingAgent.subscribe((data: any) => {
+      if(data.type == Enum.QUERY_IN_PROGRESS) {
+        this.queryInProgress = true;
+      } else if(data.type == Enum.QUERY_COMPLETE) {
+        this.queryInProgress = false;
+      }
+    })
+  }
+  ngOnDestroy(): void {
+    if(this.agentListener) {
+      this.agentListener.unsubscribe();
+    }
   }
   setHiLite(tab: string) {
     this.liText = {
@@ -48,5 +65,8 @@ export class AppComponent implements OnInit {
       contact: this.normal
     };
     this.liText[tab] = this.hilite;
+  }
+  navigate(path: string) {
+    this.router.navigateByUrl(path);
   }
 }

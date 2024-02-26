@@ -1,5 +1,7 @@
 import { Component, OnInit, Renderer2, RendererFactory2 } from '@angular/core';
 import { MeshGenaiService } from '../../services/mesh-genai.service';
+import { initFlowbite } from 'flowbite';
+import { Enum } from 'src/app/models/mesh-model';
 
 @Component({
   selector: 'app-genai',
@@ -30,6 +32,7 @@ export class GenaiComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    initFlowbite();
     try {
       let settings = localStorage.getItem('settings');
       if(settings) {
@@ -40,6 +43,7 @@ export class GenaiComponent implements OnInit {
     }
   }
   query() {
+    this.meshService.announcing({type: Enum.QUERY_IN_PROGRESS});
     console.log(this.question)
     this.meshService.post(this.settings.ragUrl, {input: this.question, config: {}})
     .subscribe({
@@ -53,22 +57,21 @@ export class GenaiComponent implements OnInit {
           const endStr = '"}]}';
           str = str.slice(0, str.indexOf(endStr)+endStr.length)
           console.log(str)
-          let str2 = str.replace(/\n/g, '<br>');
-          //str = str.replace(/<\/script>\n```/g, '<\/script>\n${/token}');
-          //str = str.replace(/```\n<script/g, '${token}\n<script')
-          //console.log(str)
+          let str2 = str.replace(/\\n/g, '<br>');
+          let json = JSON.parse(str2);
+          let output = json.ops[0].value.output;
+          output = output.replace(/<\/script><br>```/g, '<\/script><br>${/token}');
+          output = output.replace(/```<br><script/g, '${token}<br><script')
+          console.log(output)
           let el = <HTMLElement>document.querySelector('div.genai-response');
           if(el) {
             let div = this.renderer.createElement('div');
-            div.setAttribute('class', 'block w-full text-gray-900');
-            div.innerText = this.question;
+            div.setAttribute('class', 'block w-full mb-2');
+            div.innerHTML = `<div class="flex flex-col text-sm"><div class="text-blue-600">Q:  ${this.question}</div><div class="indent-7 class="text-gray-600"">${output}</div></div>`;
             this.renderer.appendChild(el, div);
             
-            div = this.renderer.createElement('div');
-            div.setAttribute('class', 'block w-full text-gray-900');
-            div.innerHTML = str2;
-            this.renderer.appendChild(el, div);
           }
+          this.meshService.announcing({type: Enum.QUERY_COMPLETE});
           //let tmpStr = '';
           //let script = '';
           //tmpStr = str.slice(str.indexOf(scriptMarker)+scriptMarker.length, str.length)
