@@ -1,14 +1,16 @@
-import { Component, OnInit, Renderer2, RendererFactory2 } from '@angular/core';
+import { Component, OnInit, OnDestroy, AfterViewInit, Renderer2, RendererFactory2, ChangeDetectorRef } from '@angular/core';
 import { MeshGenaiService } from '../../services/mesh-genai.service';
 import { initFlowbite } from 'flowbite';
-import { Enum } from 'src/app/models/mesh-model';
+import { Enum, Icon } from 'src/app/models/mesh-model';
+
+declare const webkitSpeechRecognition: new () => any;
 
 @Component({
   selector: 'app-genai',
   templateUrl: './genai.component.html',
   styleUrls: ['./genai.component.css']
 })
-export class GenaiComponent implements OnInit {
+export class GenaiComponent implements OnInit, OnDestroy, AfterViewInit {
   question = '';
   settings = {
     ragUrl: '',
@@ -24,10 +26,14 @@ export class GenaiComponent implements OnInit {
     testQuery: ''
   };
   renderer: Renderer2;
+  micIcon: HTMLElement | undefined;
+  icon = Icon;
+  recognizing = false;
 
   constructor(
     private meshService: MeshGenaiService,
-    private rendererFactory: RendererFactory2
+    private rendererFactory: RendererFactory2,
+    private cd: ChangeDetectorRef
   ) {
     this.renderer = this.rendererFactory.createRenderer(null, null);
   }
@@ -43,10 +49,25 @@ export class GenaiComponent implements OnInit {
       console.log(e)
     }
   }
-  query() {
+  ngOnDestroy(): void {
+    
+  }
+  ngAfterViewInit(): void {
+    if(!this.micIcon) {
+      this.micIcon = <HTMLElement>document.querySelector('span.mic-icon')
+      this.toggleMic(false);
+    }      
+  }
+  toggleMic(on = false) {
+    if(this.micIcon) {
+      this.micIcon.innerHTML = on ? this.icon.micOn : this.icon.micOff;
+      this.recognizing = on;
+    }
+  }
+  query(question = this.question) {
     this.meshService.announcing({type: Enum.QUERY_IN_PROGRESS});
-    console.log(this.question)
-    this.meshService.post(this.settings.ragUrl, {input: this.question, config: {}})
+    console.log(question)
+    this.meshService.post(this.settings.ragUrl, {input: question, config: {}})
     .subscribe({
       next: (res: any) => {
         console.log(typeof res == 'string')
@@ -119,5 +140,62 @@ export class GenaiComponent implements OnInit {
   }
   update() {
     localStorage.setItem('settings', JSON.stringify(this.settings));
+  }
+  talkToMe() {
+    if(!this.micIcon) {
+      this.micIcon = <HTMLElement>document.querySelector('span.mic-icon')
+    }
+    if (this.recognizing) {
+      this.toggleMic(false)
+      //this.queryIcon.innerHTML = this.icons.micOff;
+      //this.recognizing = false;
+      //this.queryIcon.style.setProperty('color', 'gray');
+      return;
+    }
+    if (webkitSpeechRecognition) {
+      let recognition = new webkitSpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      let message = '';
+
+      recognition.onstart = () => {
+        this.toggleMic(true)
+        //this.queryIcon.innerHTML = this.icons.micOn;
+        //this.recognizing = true;
+        this.micIcon!.style.setProperty('color', 'red');
+      };
+
+      recognition.onerror = (event: any) => {
+        if (event.error == 'no-speech') {
+        }
+        if (event.error == 'audio-capture') {
+        }
+        if (event.error == 'not-allowed') {
+        }
+      };
+
+      recognition.onend = () => {
+        this.toggleMic(false);
+        //this.queryIcon.innerHTML = this.icons.micOff;
+        //this.recognizing = false;
+        this.micIcon!.style.setProperty('color', 'gray');
+      };
+
+      recognition.onresult = (event: any) => {
+        let interim_transcript = '';
+        for (let i = event.resultIndex; i < event.results.length; ++i) {
+          if (event.results[i].isFinal) {
+            message += event.results[i][0].transcript;
+            this.question = message
+            this.cd.detectChanges();
+            this.query(message);
+          } else {
+            interim_transcript += event.results[i][0].transcript;
+          }
+        }
+      };
+
+      recognition.start();
+    }
   }
 }
