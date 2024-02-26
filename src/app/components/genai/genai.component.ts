@@ -14,6 +14,7 @@ export class GenaiComponent implements OnInit {
     ragUrl: '',
     pdfUrl: ''
   };
+  array: any;
   pdfLoader = {
     collectionName: '',
     sourceName: '',
@@ -51,17 +52,22 @@ export class GenaiComponent implements OnInit {
         console.log(typeof res == 'string')
         try {
           console.log(res)
-          let scripts: any[] = [];
           const scriptMarker = "```"
           let str = res.slice(res.indexOf('{"ops":[{"op":"add","path":"/logs/StrOutputParser/final_output"'), res.length)
           const endStr = '"}]}';
           str = str.slice(0, str.indexOf(endStr)+endStr.length)
           console.log(str)
-          let str2 = str.replace(/\\n/g, '<br>');
+          let str2 = str.replace(/```/g, '');
+          str2 = str2.replace(/\\n/g, '<br>');
           let json = JSON.parse(str2);
           let output = json.ops[0].value.output;
-          output = output.replace(/<\/script><br>```/g, '<\/script><br>${/token}');
-          output = output.replace(/```<br><script/g, '${token}<br><script')
+          output = output.replace(/&/g, '&amp');
+          output = output.replace(/<script/g, '&ltscript');
+          output = output.replace(/<\/script>/g, '&lt/script&gt');
+          if(output.indexOf('&ltscript') > 0) {
+            output = output.replace(/&lt\/script&gt/g, '&lt\/script&gt</div>');
+            output = output.replace(/&ltscript/g, '<div class="rounded-xl bg-slate-200">&ltscript')              
+          }
           console.log(output)
           let el = <HTMLElement>document.querySelector('div.genai-response');
           if(el) {
@@ -72,29 +78,44 @@ export class GenaiComponent implements OnInit {
             
           }
           this.meshService.announcing({type: Enum.QUERY_COMPLETE});
-          //let tmpStr = '';
-          //let script = '';
-          //tmpStr = str.slice(str.indexOf(scriptMarker)+scriptMarker.length, str.length)
-          //console.log(str.indexOf(scriptMarker))
-          //console.log(tmpStr)
-          //if(tmpStr.length > 0) {
-          //  do {
-          //    console.log(tmpStr)
-          //    script = tmpStr.slice(0, tmpStr.indexOf(scriptMarker)+scriptMarker.length)
-          //    console.log(script)
-          //    scripts.push(script)  
-          //    tmpStr = tmpStr.replace(script, '${token}')  
-          //  } while(tmpStr.indexOf(scriptMarker) >= 0)
-          //}
-          console.log(scripts)
         } catch(e) {
           console.log(e);
+          this.meshService.announcing({type: Enum.QUERY_COMPLETE});
         }
       }
     })
   }
+  uploadFile(evt: any) {
+    const files = evt.target.files;
+    const reader = new FileReader();
+    reader.readAsArrayBuffer(files[0])
+    reader.onload = (data:any) => {
+      this.array =  this.meshService.arrayBufferToBase64(data.srcElement.result);
+    }
+  }
   upload() {
-    console.log('upload')
+    this.meshService.announcing({type: Enum.QUERY_IN_PROGRESS});
+    const input = {
+      collection_name: this.pdfLoader.collectionName,
+      source_name: this.pdfLoader.sourceName,
+      chunk_size: this.pdfLoader.chunkSize,
+      chunk_overlap: this.pdfLoader.chunkOverlap,
+      text_query: this.pdfLoader.testQuery,
+      source_data: this.array
+    }
+    this.meshService.post(this.settings.pdfUrl, {input: input, config: {}})
+    .subscribe({
+      next: (res: any) => {
+        console.log(typeof res == 'string')
+        try {
+          console.log(res)
+          this.meshService.announcing({type: Enum.QUERY_COMPLETE});
+        } catch(e) {
+          console.log(e);
+          this.meshService.announcing({type: Enum.QUERY_COMPLETE});
+        }
+      }
+    })
   }
   update() {
     localStorage.setItem('settings', JSON.stringify(this.settings));
