@@ -1,6 +1,6 @@
 # MeshGenai
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 16.2.2.
+Explore RAG LLM pipeline for Mesh
 
 ## Development server
 
