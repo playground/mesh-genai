@@ -34,6 +34,19 @@
           PDF Loader
         </button>
       </li>
+      <li class="me-2" role="presentation">
+        <button
+          class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+          id="settings-tab"
+          data-tabs-target="#settings"
+          type="button"
+          role="tab"
+          aria-controls="settings"
+          aria-selected="false"
+        >
+          settings
+        </button>
+      </li>
     </ul>
   </div>
   <div id="default-tab-content">
@@ -48,21 +61,62 @@
         <input type="text" id="large-input" class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
         (keydown.enter)="query()" [(ngModel)]="question" placeholder="Ask me something...">
       </div>
-    </div>
+      <div class="mb-6 genai-response">
+      </div>
     <div
       class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
       id="pdf"
       role="tabpanel"
       aria-labelledby="pdf-tab"
     >
-      <p class="text-sm text-gray-500 dark:text-gray-400">
-        This is some placeholder content the
-        <strong class="font-medium text-gray-800 dark:text-white"
-          >pdf tab's associated content</strong
-        >. Clicking another tab will toggle the visibility of this one for the
-        next. The tab JavaScript swaps classes to control the content visibility
-        and styling.
-      </p>
+      <div class="mb-3">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Collection Name</label>
+        <input type="text" id="collection-name-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="pdfLoader.collectionName" placeholder="Provide collection name">
+      </div>
+      <div class="mb-3">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Collection Name</label>
+        <input type="text" id="source-name-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="pdfLoader.sourceName" placeholder="Provide collection name">
+      </div>
+      <div class="mb-3">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Collection Name</label>
+        <input type="text" id="source-data-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="pdfLoader.sourceData" placeholder="Provide collection name">
+      </div>
+      <div class="mb-3">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Collection Name</label>
+        <input type="text" id="chunk-size-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="pdfLoader.chunkSize" placeholder="Provide collection name">
+      </div>
+      <div class="mb-3">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Collection Name</label>
+        <input type="text" id="chunk-overlap-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="pdfLoader.chunkOverlap" placeholder="Provide collection name">
+      </div>
+      <div class="mb-3">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Collection Name</label>
+        <input type="text" id="test-query-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="pdfLoader.testQuery" placeholder="Provide collection name">
+      </div>
+    </div>
+    <div
+      class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+      id="settings"
+      role="tabpanel"
+      aria-labelledby="settings-tab"
+    >
+      <div class="mb-6">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">RAG URL</label>
+        <input type="text" id="default-input-rag" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="settings.ragUrl" placeholder="RAG Chroma url...">
+      </div>
+      <div class="mb-6">
+        <label for="default-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">PDF Url</label>
+        <input type="text" id="default-input-pdf" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="settings.pdfUrl" placeholder="PDF loader url...">
+        <button (click)="update()" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 float-right">Update</button>
+      </div>
     </div>
   </div>
 </div>
