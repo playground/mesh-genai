@@ -6,6 +6,8 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+    "server:remote": "ng serve --host 0.0.0.0",
+    "server:remote:background": "nohup ng serve --host 0.0.0.0 2&>&1 >> /var/log/ng.log &",
     "test": "ng test"
   },
   "private": true,
