@@ -95,7 +95,7 @@ export class GenaiComponent implements OnInit, OnDestroy, AfterViewInit {
             let div = this.renderer.createElement('div');
             div.setAttribute('class', 'block w-full mb-2');
             div.innerHTML = `<div class="flex flex-col text-sm"><div class="text-blue-600">Q:  ${this.question}</div><div class="indent-7 class="text-gray-600"">${output}</div></div>`;
-            this.renderer.appendChild(el, div);
+            this.renderer.insertBefore(el, div, el.firstChild);
             
           }
           this.meshService.announcing({type: Enum.QUERY_COMPLETE});
