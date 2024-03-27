@@ -1,0 +1,146 @@
+<div
+  class="justify-center items-center m-[90px] max-sm:mx-[20px] max-sm:my-[90px]"
+>
+  <div class="mb-4 border-b border-gray-200 dark:border-gray-700">
+    <ul
+      class="flex flex-wrap -mb-px text-sm font-medium text-center"
+      id="default-tab"
+      data-tabs-toggle="#default-tab-content"
+      role="tablist"
+    >
+      <li class="me-2" role="presentation">
+        <button
+          class="inline-block p-4 border-b-2 rounded-t-lg"
+          id="question-tab"
+          data-tabs-target="#question"
+          type="button"
+          role="tab"
+          aria-controls="question"
+          aria-selected="false"
+        >
+          Try Me
+        </button>
+      </li>
+      <li class="me-2" role="presentation">
+        <button
+          class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+          id="pdf-tab"
+          data-tabs-target="#pdf"
+          type="button"
+          role="tab"
+          aria-controls="pdf"
+          aria-selected="false"
+        >
+          Loader
+        </button>
+      </li>
+      <li class="me-2" role="presentation">
+        <button
+          class="inline-block p-4 border-b-2 rounded-t-lg hover:text-gray-600 hover:border-gray-300 dark:hover:text-gray-300"
+          id="settings-tab"
+          data-tabs-target="#settings"
+          type="button"
+          role="tab"
+          aria-controls="settings"
+          aria-selected="false"
+        >
+          Settings
+        </button>
+      </li>
+    </ul>
+  </div>
+  <div id="default-tab-content">
+    <div
+      class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+      id="question"
+      role="tabpanel"
+      aria-labelledby="question-tab"
+    >
+      <div class="flex flex-row">
+        <form class="mb-6 max-w-sm">
+          <select id="ask" (change)="onChange($event)" class="block h-[40px] w-auto bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <option value="askMe" selected>Ask Me</option>
+            <option value="askWeb">Ask Web</option>
+            <option value="askAgent">Ask Agent</option>
+          </select>
+        </form>
+        <div *ngIf="askMe == 'askMe'" class="mx-2 w-[380px]">
+          <div class="flex flex-row w-full">
+            <input type="text" id="collection" class="block h-[40px] text-sm w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              [(ngModel)]="collection" placeholder="Enter collection name...">
+          </div>
+        </div>
+        <div *ngIf="askMe == 'askWeb'" class="mx-2 w-[380px]">
+          <div class="flex flex-row w-full">
+            <input type="text" id="web-url" class="block h-[40px] text-sm w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              [(ngModel)]="webUrl" placeholder="Provide url...">
+          </div>
+        </div>
+      </div>
+      <div class="mb-6">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Question</label>
+        <div class="flex flex-row w-full">
+          <input type="text" id="large-input" class="block w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+          (keydown.enter)="query()" [(ngModel)]="question" placeholder="Ask me something...">
+          <span class="text-white dark:text-black px-2 mr-4 bg-transparent flex items-center custom-ml mic-icon"
+          (click)="talkToMe()"></span>  
+        </div>
+      </div>
+      <div class="mb-6 genai-response">
+      </div>
+    </div>
+    <div
+      class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+      id="pdf"
+      role="tabpanel"
+      aria-labelledby="pdf-tab"
+    >
+      <div class="mb-3">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Collection Name</label>
+        <input type="text" id="collection-name-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="allLoader.collectionName" placeholder="Provide collection name">
+      </div>
+      <div class="mb-3">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Source Name</label>
+        <input type="text" id="source-name-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="allLoader.sourceName" placeholder="Provide source name">
+      </div>
+      <div class="mb-3">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Source Data</label>
+        <input type="file" accept=".csv, .pdf, .txt, .json" multiple (change)="uploadFile($event)" id="source-data-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="allLoader.sourceData" placeholder="Source data">
+      </div>
+      <div class="mb-3">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chunk Size</label>
+        <input type="text" id="chunk-size-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="allLoader.chunkSize" placeholder="Chunk size">
+      </div>
+      <div class="mb-3">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chunk Overlap</label>
+        <input type="text" id="chunk-overlap-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="allLoader.chunkOverlap" placeholder="Chunk overlap">
+      </div>
+      <div class="mb-3">
+        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Test Query</label>
+        <input type="text" id="test-query-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="allLoader.testQuery" placeholder="Provide test query">
+        <button (click)="upload()" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 float-right">Upload</button>
+      </div>
+      <div class="mb-6 genai-upload-response">
+      </div>
+    </div>
+    <div
+      class="hidden p-4 rounded-lg bg-gray-50 dark:bg-gray-800"
+      id="settings"
+      role="tabpanel"
+      aria-labelledby="settings-tab"
+    >
+      <div class="mb-6">
+        <label for="default-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">LangchainJS Url</label>
+        <input type="text" id="default-input-pdf" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="settings.langchainUrl" placeholder="LangchainJS loader url...">
+        <button (click)="update()" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 float-right">Update</button>
+      </div>
+    </div>
+  </div>
+</div>

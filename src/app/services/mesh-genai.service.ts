@@ -34,6 +34,44 @@ export class MeshGenaiService {
       })        
     })
   }
+  get(url: string) {
+    return new Observable((observer) => {
+      const requestOptions: any = {
+        method: "GET",
+        redirect: "follow"
+      };
+      
+      fetch(url, requestOptions)
+        .then((response) => response.text())
+        .then((result) => {
+          observer.next((result));
+          observer.complete();
+        })
+        .catch((e) => {
+          console.log(e);
+          observer.error(e);
+        })
+      })
+  }
+  postFormData(url: string, formData: FormData) {
+    return new Observable((observer) => {
+      const options: any = {
+        method: 'POST',
+        body: formData,
+        redirect: 'follow'
+      }
+      fetch(url, options)
+      .then((response) => response.text())
+      .then((result) => {
+        observer.next((result));
+        observer.complete();
+      })
+      .catch((e) => {
+        console.log(e);
+        observer.error(e);
+      })
+    })
+  }
   post(url: string, body: any) {
     return new Observable((observer) => {
       const raw = JSON.stringify(body);

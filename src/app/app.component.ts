@@ -16,7 +16,7 @@ export class AppComponent implements OnInit, OnDestroy {
   liText: any = {
     home: this.hilite, 
     genai: this.normal, 
-    services: this.normal, 
+    langchainJS: this.normal, 
     contact: this.normal
   };
   agentListener!: { unsubscribe: () => void };
@@ -36,6 +36,8 @@ export class AppComponent implements OnInit, OnDestroy {
       if(route instanceof NavigationEnd) {
         if(route.url.indexOf('/genai') == 0) {
           this.setHiLite('genai');
+        } else if(route.url.indexOf('/langchain-js') == 0) {
+          this.setHiLite('langchainJS');
         } else if(route.url.indexOf('/home') == 0) {
           this.setHiLite('home');
         } else {
@@ -61,7 +63,7 @@ export class AppComponent implements OnInit, OnDestroy {
     this.liText = {
       home: this.normal, 
       genai: this.normal, 
-      services: this.normal, 
+      langchainJS: this.normal, 
       contact: this.normal
     };
     this.liText[tab] = this.hilite;
