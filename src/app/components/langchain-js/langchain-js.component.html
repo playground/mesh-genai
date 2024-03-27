@@ -31,7 +31,7 @@
           aria-controls="pdf"
           aria-selected="false"
         >
-          PDF Loader
+          Loader
         </button>
       </li>
       <li class="me-2" role="presentation">
@@ -56,6 +56,27 @@
       role="tabpanel"
       aria-labelledby="question-tab"
     >
+      <div class="flex flex-row">
+        <form class="mb-6 max-w-sm">
+          <select id="ask" (change)="onChange($event)" class="block h-[40px] w-auto bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <option value="askMe" selected>Ask Me</option>
+            <option value="askWeb">Ask Web</option>
+            <option value="askAgent">Ask Agent</option>
+          </select>
+        </form>
+        <div *ngIf="askMe == 'askMe'" class="mx-2 w-[380px]">
+          <div class="flex flex-row w-full">
+            <input type="text" id="collection" class="block h-[40px] text-sm w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              [(ngModel)]="collection" placeholder="Enter collection name...">
+          </div>
+        </div>
+        <div *ngIf="askMe == 'askWeb'" class="mx-2 w-[380px]">
+          <div class="flex flex-row w-full">
+            <input type="text" id="web-url" class="block h-[40px] text-sm w-full p-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-base focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+              [(ngModel)]="webUrl" placeholder="Provide url...">
+          </div>
+        </div>
+      </div>
       <div class="mb-6">
         <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Question</label>
         <div class="flex flex-row w-full">
@@ -77,33 +98,35 @@
       <div class="mb-3">
         <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Collection Name</label>
         <input type="text" id="collection-name-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        [(ngModel)]="pdfLoader.collectionName" placeholder="Provide collection name">
+        [(ngModel)]="allLoader.collectionName" placeholder="Provide collection name">
       </div>
       <div class="mb-3">
         <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Source Name</label>
         <input type="text" id="source-name-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        [(ngModel)]="pdfLoader.sourceName" placeholder="Provide source name">
+        [(ngModel)]="allLoader.sourceName" placeholder="Provide source name">
       </div>
       <div class="mb-3">
         <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Source Data</label>
-        <input type="file" (change)="uploadFile($event)" id="source-data-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        [(ngModel)]="pdfLoader.sourceData" placeholder="Source data">
+        <input type="file" accept=".csv, .pdf, .txt, .json" multiple (change)="uploadFile($event)" id="source-data-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        [(ngModel)]="allLoader.sourceData" placeholder="Source data">
       </div>
       <div class="mb-3">
         <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chunk Size</label>
         <input type="text" id="chunk-size-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        [(ngModel)]="pdfLoader.chunkSize" placeholder="Chunk size">
+        [(ngModel)]="allLoader.chunkSize" placeholder="Chunk size">
       </div>
       <div class="mb-3">
         <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Chunk Overlap</label>
         <input type="text" id="chunk-overlap-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        [(ngModel)]="pdfLoader.chunkOverlap" placeholder="Chunk overlap">
+        [(ngModel)]="allLoader.chunkOverlap" placeholder="Chunk overlap">
       </div>
       <div class="mb-3">
         <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Test Query</label>
         <input type="text" id="test-query-input" class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        [(ngModel)]="pdfLoader.testQuery" placeholder="Provide test query">
+        [(ngModel)]="allLoader.testQuery" placeholder="Provide test query">
         <button (click)="upload()" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 float-right">Upload</button>
+      </div>
+      <div class="mb-6 genai-upload-response">
       </div>
     </div>
     <div
@@ -113,14 +136,9 @@
       aria-labelledby="settings-tab"
     >
       <div class="mb-6">
-        <label for="large-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">RAG URL</label>
-        <input type="text" id="default-input-rag" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        [(ngModel)]="settings.ragUrl" placeholder="RAG Chroma url...">
-      </div>
-      <div class="mb-6">
-        <label for="default-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">PDF Url</label>
+        <label for="default-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">LangchainJS Url</label>
         <input type="text" id="default-input-pdf" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-        [(ngModel)]="settings.pdfUrl" placeholder="PDF loader url...">
+        [(ngModel)]="settings.langchainUrl" placeholder="LangchainJS loader url...">
         <button (click)="update()" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 float-right">Update</button>
       </div>
     </div>
